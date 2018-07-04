@@ -1,5 +1,5 @@
 import gym
-from DQN_CartPole import DeepQNetwork
+from DQN import DeepQNetwork
 
 env = gym.make('MountainCar-v0')
 env = env.unwrapped

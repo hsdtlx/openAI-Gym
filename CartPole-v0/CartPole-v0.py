@@ -1,5 +1,5 @@
 import gym
-from DQN_CartPole import DeepQNetwork
+from DQN import DeepQNetwork
 
 env = gym.make('CartPole-v0')
 env = env.unwrapped
@@ -37,4 +37,3 @@ for i_episode in range(100):
         observation = observation_
         total_steps += 1
 
-RL.plot_cost()
