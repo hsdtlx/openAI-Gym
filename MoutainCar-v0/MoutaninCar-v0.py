@@ -1,8 +1,9 @@
 import gym
-from DQN import DeepQNetwork
+from DQN2 import DeepQNetwork
 
 env = gym.make('MountainCar-v0')
 env = env.unwrapped
+print(env.observation_space.shape[0])
 RL = DeepQNetwork(network_actions=env.action_space.n,
                   network_features=env.observation_space.shape[0],
                   learning_rate=0.01, e_greedy=0.9,
@@ -32,6 +33,3 @@ for i_episode in range(100):
             break
         observation = observation_
         total_steps += 1
-
-RL.plot_cost()
-

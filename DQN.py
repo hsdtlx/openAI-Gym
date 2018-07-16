@@ -46,7 +46,7 @@ class DeepQNetwork:
         self.q_target = tf.placeholder(tf.float32, [None, self.network_actions], name='Q_target')  #loss
         with tf.variable_scope('eval_net'):
             c_names, n_l1, w_initializer, b_initializer = \
-                ['eval_net_params', tf.GraphKeys.GLOBAL_VARIABLES], 10, \
+                ['eval_net_params', tf.GraphKeys.GLOBAL_VARIABLES], 100, \
                 tf.random_normal_initializer(0., 0.3), tf.constant_initializer(0.1)  # config of layers
 
             # layer1
