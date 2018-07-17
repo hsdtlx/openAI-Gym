@@ -1,7 +1,6 @@
 import tensorflow as tf
 import numpy as np
 
-
 class DeepQNetwork:
     def __init__(
             self,
