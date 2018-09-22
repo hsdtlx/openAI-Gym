@@ -41,29 +41,35 @@ class DeepQNetwork:
             self.cost_his = []
 
     def _build_net(self):
-        # # building evaluate net
-        # self.s = tf.placeholder(tf.float32, [None, self.network_features], name='s')    # evaluate net's input
-        # self.q_target = tf.placeholder(tf.float32, [None, self.network_actions], name='Q_target')  #loss
-        # with tf.variable_scope('eval_net'):
-        #     c_names, n_l1, w_initializer, b_initializer = \
-        #         ['eval_net_params', tf.GraphKeys.GLOBAL_VARIABLES], 100, \
-        #         tf.random_normal_initializer(0., 0.3), tf.constant_initializer(0.1)  # config of layers
-        #
-        #     # layer1
-        #     with tf.variable_scope('l1'):
-        #         w1 = tf.get_variable('w1', [self.network_features, n_l1], initializer=w_initializer, collections=c_names)
-        #         b1 = tf.get_variable('b1', [1, n_l1], initializer=b_initializer, collections=c_names)
-        #         l1 = tf.nn.relu(tf.matmul(self.s, w1) + b1)
-        #
-        #     # layer 2
-        #     with tf.variable_scope('l2'):
-        #         w2 = tf.get_variable('w2', [n_l1, self.network_actions], initializer=w_initializer, collections=c_names)
-        #         b2 = tf.get_variable('b2', [1, self.network_actions], initializer=b_initializer, collections=c_names)
-        #         self.q_eval = tf.matmul(l1, w2) + b2
+        # building evaluate net
 
         with tf.name_scope('input'):
-            self.obseravtions = tf.placeholder(tf.float32, [None, self.network_features], name='observations')
+            self.obseravtions = tf.placeholder(tf.float32, [None, self.network_features], 'observations')
+            self.q_target = tf.placeholder(tf.float32, [None, self.network_actions], 'Q_target')
 
+        with tf.variable_scope('eval_net'):
+            c_names, n_l1, w_initializer, b_initializer = \
+                        ['eval_net_params', tf.GraphKeys.GLOBAL_VARIABLES], 100, \
+                    tf.random_normal_initializer(0., 0.3), tf.constant_initializer(0.1)
+            layer1 = tf.layers.dense(
+                inputs=self.network_features,
+                units=n_l1,
+                activation=tf.nn.relu,
+                kernel_initializer=tf.random_normal_initializer(0., 0.3),
+                bias_initializer=tf.constant_initializer(0.1),
+                collections=c_names,
+                name='layer1'
+            )
+
+            self.q_eval = tf.layers.dense(
+                inputs=layer1,
+                units=self.network_actions,
+                activation=None,
+                kernel_initializer=tf.random_normal_initializer(0., 0.3),
+                bias_initializer=tf.constant_initializer(0.1),
+                collections=c_names,
+                name='layer2'
+            )
 
         with tf.variable_scope('loss'):
             self.loss = tf.reduce_mean(tf.squared_difference(self.q_target, self.q_eval))
@@ -74,16 +80,25 @@ class DeepQNetwork:
         self.s_ = tf.placeholder(tf.float32, [None, self.network_features], name='s_')
         with tf.variable_scope('target_net'):
             c_names = ['target_net_params', tf.GraphKeys.GLOBAL_VARIABLES]
+            layer1 = tf.layers.dense(
+                inputs=self.network_features,
+                units=n_l1,
+                activation=tf.nn.relu,
+                kernel_initializer=tf.random_normal_initializer(0., 0.3),
+                bias_initializer=tf.constant_initializer(0.3),
+                collections=c_names,
+                name='layer1'
+            )
 
-            with tf.variable_scope('l1'):
-                w1 = tf.get_variable('w1', [self.network_features, n_l1], initializer=w_initializer, collections=c_names)
-                b1 = tf.get_variable('b1', [1, n_l1], initializer=b_initializer, collections=c_names)
-                l1 = tf.nn.relu(tf.matmul(self.s_, w1) + b1)
-
-            with tf.variable_scope('l2'):
-                w2 = tf.get_variable('w2', [n_l1, self.network_actions], initializer=w_initializer, collections=c_names)
-                b2 = tf.get_variable('b2', [1, self.network_actions], initializer=b_initializer, collections=c_names)
-                self.q_next = tf.matmul(l1, w2) + b2
+            self.q_next = tf.layers.dense(
+                inputs=layer1,
+                units=self.network_actions,
+                activation=None,
+                kernel_initializer=tf.random_normal_initializer(0., 0.3),
+                bias_initializer=tf.constant_initializer(0.3),
+                collections=c_names,
+                name='layer2'
+            )
 
     def store_transition(self, s, a, r, s_):
         if not hasattr(self, 'memory_counter'):

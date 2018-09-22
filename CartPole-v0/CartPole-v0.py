@@ -13,7 +13,7 @@ RL = DeepQNetwork(network_actions=env.action_space.n,
 total_steps = 0
 
 
-for i_episode in range(100):
+for i_episode in range(1000):
 
     observation = env.reset()
     ep_r = 0
